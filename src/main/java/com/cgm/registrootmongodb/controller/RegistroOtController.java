@@ -77,7 +77,7 @@ public class RegistroOtController {
             if(list == null){
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            
+
             return new ResponseEntity<>(list,HttpStatus.OK);
         }catch(Exception e){
             System.out.println(e.getMessage());
@@ -98,6 +98,27 @@ public class RegistroOtController {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<>(res,HttpStatus.OK);
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    @GetMapping("/estados")
+    public ResponseEntity<List<Estado>> getEstadosOt(@RequestHeader Map<String, String> headers){
+
+        try{
+            if (!validaToken(headers)){
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+
+            List<Estado> listEstados = registroOtService.getEstados();
+
+            if(listEstados == null){
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(listEstados,HttpStatus.OK);
         }catch(Exception e){
             System.out.println(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

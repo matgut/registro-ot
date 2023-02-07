@@ -21,5 +21,7 @@ public interface RegistroOtService {
     ResgistroOt updateRegistroEstado(String id, Estado estado);
     Optional<ResgistroOt> getById(String id);
 
+    List<Estado> getEstados();
+
 
 }

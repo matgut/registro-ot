@@ -8,9 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,6 +59,11 @@ public class RegistroOtServiceImp implements RegistroOtService{
     @Override
     public Optional<ResgistroOt> getById(String id) {
         return registroOtRepository.findById(id);
+    }
+
+    @Override
+    public List<Estado> getEstados() {
+        return new ArrayList<Estado>(Arrays.asList(Estado.values()));
     }
 
     private String getFechaActualFormateada(String formatDate){

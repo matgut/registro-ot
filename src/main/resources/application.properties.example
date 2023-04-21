@@ -3,4 +3,9 @@ spring.data.mongodb.database=registroot
 spring.application.name=resgitros-ot
 server.port=5555
 registroot.security.token=
+springdoc.api-docs.path=/api-docs
+springdoc.paths-to-exclude=/swagger-resources/**
+springdoc.packagesToScan=com.cgm.registrootmongodb.controller
+springdoc.pathsToMatch=/v1, /api/v1/registro-ot/
+springdoc.api-docs.title=Mi API REST
 

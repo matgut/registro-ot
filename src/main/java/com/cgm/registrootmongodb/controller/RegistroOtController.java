@@ -3,6 +3,9 @@ package com.cgm.registrootmongodb.controller;
 import com.cgm.registrootmongodb.entity.ResgistroOt;
 import com.cgm.registrootmongodb.enumeration.Estado;
 import com.cgm.registrootmongodb.service.RegistroOtService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -25,7 +28,8 @@ public class RegistroOtController {
 
 
     @PostMapping
-    public ResponseEntity<?> saveRegistro(@RequestBody ResgistroOt resgistroOt, @RequestHeader Map<String, String> headers){
+    @Operation(summary = "Guarda registro OT")
+    public ResponseEntity<?> saveRegistro(@RequestBody ResgistroOt resgistroOt, @Parameter(in = ParameterIn.HEADER) @RequestHeader Map<String, String> headers){
         try{
             if (!validaToken(headers)){
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -38,6 +42,7 @@ public class RegistroOtController {
     }
 
     @GetMapping
+    @Operation(summary = "Obtiene registros OT")
     public ResponseEntity<?> getAllRegistros(@RequestHeader Map<String, String> headers){
         try{
             if (!validaToken(headers)){
@@ -51,7 +56,8 @@ public class RegistroOtController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteRegistroOT(@PathVariable String id,@RequestHeader Map<String, String> headers){
+    @Operation(summary = "Elimina registro OT por ID")
+    public ResponseEntity<?> deleteRegistroOT(@Parameter(in = ParameterIn.PATH) @PathVariable String id,@RequestHeader Map<String, String> headers){
         try{
             if (!validaToken(headers)){
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -65,7 +71,8 @@ public class RegistroOtController {
     }
 
     @GetMapping("/{estado}")
-    public ResponseEntity<List<ResgistroOt>> getRegistrosByEstado(@PathVariable Estado estado,@RequestHeader Map<String, String> headers){
+    @Operation(summary = "Obtiene registros OT por Estados")
+    public ResponseEntity<List<ResgistroOt>> getRegistrosByEstado(@Parameter(in = ParameterIn.PATH) @PathVariable Estado estado,@RequestHeader Map<String, String> headers){
         try{
 
             if (!validaToken(headers)){
@@ -86,7 +93,8 @@ public class RegistroOtController {
     }
 
     @PutMapping("/{id}/{estado}")
-    public ResponseEntity<ResgistroOt> getRegistrosByEstado(@PathVariable String id, @PathVariable Estado estado,@RequestHeader Map<String, String> headers){
+    @Operation(summary = "Actualiza registro OT por estado")
+    public ResponseEntity<ResgistroOt> updRegistrosByIdEstado(@Parameter(in = ParameterIn.PATH) @PathVariable String id,@Parameter(in = ParameterIn.PATH) @PathVariable Estado estado,@RequestHeader Map<String, String> headers){
 
         try{
             if (!validaToken(headers)){
@@ -106,6 +114,7 @@ public class RegistroOtController {
     }
 
     @GetMapping("/estados")
+    @Operation(summary = "Obtiene Estados de registo OT permitidos")
     public ResponseEntity<List<Estado>> getEstadosOt(@RequestHeader Map<String, String> headers){
 
         try{

@@ -51,6 +51,7 @@ public class RegistroOtServiceImp implements RegistroOtService{
         if(findRegistro.isPresent()){
             ResgistroOt updRegistro = findRegistro.get();
             updRegistro.setEstado(estado);
+            updRegistro.setFcActualizacion(this.getFechaActualFormateada("dd/MM/YYYY HH:mm"));
             return registroOtRepository.save(updRegistro);
         }
         return null;

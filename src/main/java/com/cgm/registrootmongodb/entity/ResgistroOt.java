@@ -23,5 +23,6 @@ public class ResgistroOt {
     private Estado estado;
 
     private String fcCreacion;
+    private String fcActualizacion;
 
 }

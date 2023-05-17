@@ -19,7 +19,6 @@ public interface RegistroOtService {
     List<ResgistroOt> getRegistroByEstado(Estado estado);
 
     ResgistroOt updateRegistroEstado(String id, Estado estado);
-    Optional<ResgistroOt> getById(String id);
 
     List<Estado> getEstados();
 

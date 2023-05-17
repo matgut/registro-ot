@@ -70,7 +70,7 @@ public class RegistroOtController {
         }
     }
 
-    @GetMapping("/{estado}")
+    @GetMapping("byEstado/{estado}")
     @Operation(summary = "Obtiene registros OT por Estados")
     public ResponseEntity<List<ResgistroOt>> getRegistrosByEstado(@Parameter(in = ParameterIn.PATH) @PathVariable Estado estado,@RequestHeader Map<String, String> headers){
         try{

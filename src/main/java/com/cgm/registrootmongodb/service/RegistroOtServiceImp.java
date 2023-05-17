@@ -2,6 +2,8 @@ package com.cgm.registrootmongodb.service;
 
 import com.cgm.registrootmongodb.entity.ResgistroOt;
 import com.cgm.registrootmongodb.enumeration.Estado;
+import com.cgm.registrootmongodb.exceptions.EstadoNotFoundException;
+import com.cgm.registrootmongodb.exceptions.RegistroOtNotFoundException;
 import com.cgm.registrootmongodb.repository.RegistroOtRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class RegistroOtServiceImp implements RegistroOtService{
@@ -33,11 +34,12 @@ public class RegistroOtServiceImp implements RegistroOtService{
 
     @Override
     public void deleteRegistroOt(String id) {
+        registroOtRepository.findById(id).orElseThrow(() -> new RegistroOtNotFoundException(id));
         registroOtRepository.deleteById(id);
     }
 
     @Override
-    public List<ResgistroOt> getRegistroByEstado(Estado estado) {
+    public List<ResgistroOt> getRegistroByEstado(Estado estado) throws EstadoNotFoundException {
         List<ResgistroOt> listByEstado = registroOtRepository.findByEstado(estado);
         if(listByEstado.isEmpty()){
             return null;
@@ -47,19 +49,10 @@ public class RegistroOtServiceImp implements RegistroOtService{
 
     @Override
     public ResgistroOt updateRegistroEstado(String id,Estado estado) {
-        Optional<ResgistroOt> findRegistro = registroOtRepository.findById(id);
-        if(findRegistro.isPresent()){
-            ResgistroOt updRegistro = findRegistro.get();
-            updRegistro.setEstado(estado);
-            updRegistro.setFcActualizacion(this.getFechaActualFormateada("dd/MM/YYYY HH:mm"));
-            return registroOtRepository.save(updRegistro);
-        }
-        return null;
-    }
-
-    @Override
-    public Optional<ResgistroOt> getById(String id) {
-        return registroOtRepository.findById(id);
+        ResgistroOt updRegistro = registroOtRepository.findById(id).orElseThrow(() -> new RegistroOtNotFoundException(id));
+        updRegistro.setEstado(estado);
+        updRegistro.setFcActualizacion(this.getFechaActualFormateada("dd/MM/YYYY HH:mm"));
+        return registroOtRepository.save(updRegistro);
     }
 
     @Override

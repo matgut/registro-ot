@@ -2,6 +2,7 @@ package com.cgm.registrootmongodb.controller;
 
 import com.cgm.registrootmongodb.entity.ResgistroOt;
 import com.cgm.registrootmongodb.enumeration.Estado;
+import com.cgm.registrootmongodb.response.CustomResponse;
 import com.cgm.registrootmongodb.service.RegistroOtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -26,18 +27,16 @@ public class RegistroOtController {
     @Value("${registroot.security.token}")
     private String TOKEN;
 
-
+    private String MSG_INVALID_TOKEN = "Token Invalido";
     @PostMapping
     @Operation(summary = "Guarda registro OT")
     public ResponseEntity<?> saveRegistro(@RequestBody ResgistroOt resgistroOt, @Parameter(in = ParameterIn.HEADER) @RequestHeader Map<String, String> headers){
         try{
-            if (!validaToken(headers)){
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-            return new ResponseEntity<>(registroOtService.saveRegistroOt(resgistroOt),HttpStatus.CREATED);
+            if(msgValidaToken(headers) != null) return msgValidaToken(headers);
+            return CustomResponse.generateResponse("Registro guardado correctamente!",HttpStatus.CREATED,registroOtService.saveRegistroOt(resgistroOt));
         }catch(Exception e){
             System.out.println(e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return CustomResponse.generateResponse("Ha ocurrido una excepción, favor revisar!",HttpStatus.INTERNAL_SERVER_ERROR,null);
         }
     }
 
@@ -45,13 +44,12 @@ public class RegistroOtController {
     @Operation(summary = "Obtiene registros OT")
     public ResponseEntity<?> getAllRegistros(@RequestHeader Map<String, String> headers){
         try{
-            if (!validaToken(headers)){
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-            return ResponseEntity.ok(registroOtService.getAllRegistro());
+            if(msgValidaToken(headers) != null) return msgValidaToken(headers);
+            //return ResponseEntity.ok(registroOtService.getAllRegistro());
+            return CustomResponse.generateResponse("Registros obtenidos correctamente!",HttpStatus.OK,registroOtService.getAllRegistro());
         }catch(Exception e){
             System.out.println(e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return CustomResponse.generateResponse("Ha ocurrido una excepción, favor revisar!",HttpStatus.INTERNAL_SERVER_ERROR,null);
         }
     }
 
@@ -59,75 +57,71 @@ public class RegistroOtController {
     @Operation(summary = "Elimina registro OT por ID")
     public ResponseEntity<?> deleteRegistroOT(@Parameter(in = ParameterIn.PATH) @PathVariable String id,@RequestHeader Map<String, String> headers){
         try{
-            if (!validaToken(headers)){
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
+            if(msgValidaToken(headers) != null) return msgValidaToken(headers);
             registroOtService.deleteRegistroOt(id);
-            return new ResponseEntity<>(HttpStatus.OK);
+            //return new ResponseEntity<>(HttpStatus.OK);
+            return CustomResponse.generateResponse("Registro eliminado correctamente!",HttpStatus.OK,null);
         }catch(Exception e){
             System.out.println(e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return CustomResponse.generateResponse("Ha ocurrido una excepción, favor revisar!",HttpStatus.INTERNAL_SERVER_ERROR,null);
         }
     }
 
     @GetMapping("byEstado/{estado}")
     @Operation(summary = "Obtiene registros OT por Estados")
-    public ResponseEntity<List<ResgistroOt>> getRegistrosByEstado(@Parameter(in = ParameterIn.PATH) @PathVariable Estado estado,@RequestHeader Map<String, String> headers){
+    public ResponseEntity<?> getRegistrosByEstado(@Parameter(in = ParameterIn.PATH) @PathVariable Estado estado,@RequestHeader Map<String, String> headers){
         try{
 
-            if (!validaToken(headers)){
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            if(msgValidaToken(headers) != null) return msgValidaToken(headers);
+
+            List<ResgistroOt> list = registroOtService.getRegistroByEstado(Estado.valueOf(estado.toString().toUpperCase()));
+
+            if(list == null || list.size() == 0){
+                //return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                return CustomResponse.generateResponse("No se han encontrado registros para el estado "+estado,HttpStatus.OK,null);
             }
-
-            List<ResgistroOt> list = registroOtService.getRegistroByEstado(estado);
-
-            if(list == null){
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-
-            return new ResponseEntity<>(list,HttpStatus.OK);
+            return CustomResponse.generateResponse("Registros obtenidos correctamente!",HttpStatus.OK,list);
+            //return new ResponseEntity<>(list,HttpStatus.OK);
         }catch(Exception e){
             System.out.println(e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return CustomResponse.generateResponse("Ha ocurrido una excepción, favor revisar!",HttpStatus.INTERNAL_SERVER_ERROR,null);
         }
     }
 
     @PutMapping("/{id}/{estado}")
     @Operation(summary = "Actualiza registro OT por estado")
-    public ResponseEntity<ResgistroOt> updRegistrosByIdEstado(@Parameter(in = ParameterIn.PATH) @PathVariable String id,@Parameter(in = ParameterIn.PATH) @PathVariable Estado estado,@RequestHeader Map<String, String> headers){
+    public ResponseEntity<?> updRegistrosByIdEstado(@Parameter(in = ParameterIn.PATH) @PathVariable String id,@Parameter(in = ParameterIn.PATH) @PathVariable Estado estado,@RequestHeader Map<String, String> headers){
 
         try{
-            if (!validaToken(headers)){
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
+            if(msgValidaToken(headers) != null) return msgValidaToken(headers);
 
             ResgistroOt res = registroOtService.updateRegistroEstado(id, estado);
             if(res == null){
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                //return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return CustomResponse.generateResponse("No se han encontrado registro para el id "+id,HttpStatus.NOT_FOUND,null);
             }
-            return new ResponseEntity<>(res,HttpStatus.OK);
+            return CustomResponse.generateResponse("Registro actualizado correctamente!",HttpStatus.OK,res);
+
         }catch(Exception e){
             System.out.println(e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return CustomResponse.generateResponse("Ha ocurrido una excepción, favor revisar!",HttpStatus.INTERNAL_SERVER_ERROR,null);
         }
 
     }
 
     @GetMapping("/estados")
     @Operation(summary = "Obtiene Estados de registo OT permitidos")
-    public ResponseEntity<List<Estado>> getEstadosOt(@RequestHeader Map<String, String> headers){
+    public ResponseEntity<?> getEstadosOt(@RequestHeader Map<String, String> headers){
 
         try{
-            if (!validaToken(headers)){
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
+            if(msgValidaToken(headers) != null) return msgValidaToken(headers);
 
             List<Estado> listEstados = registroOtService.getEstados();
 
             if(listEstados == null){
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return CustomResponse.generateResponse("No se han encontrado registros",HttpStatus.NOT_FOUND,null);
             }
-            return new ResponseEntity<>(listEstados,HttpStatus.OK);
+            return CustomResponse.generateResponse("Registros obtenidos correctamente!",HttpStatus.OK,listEstados);
         }catch(Exception e){
             System.out.println(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -135,8 +129,15 @@ public class RegistroOtController {
 
     }
 
-    public boolean validaToken(Map<String, String> headers) {
+    private boolean validaToken(Map<String, String> headers) {
         return Objects.equals(headers.get("token"), TOKEN);
+    }
+    private ResponseEntity<Object> msgValidaToken(@RequestHeader Map<String, String> headersValid){
+
+        if (!validaToken(headersValid)){
+            return CustomResponse.generateResponse(MSG_INVALID_TOKEN,HttpStatus.UNAUTHORIZED,null);
+        }
+        return null;
     }
 
 

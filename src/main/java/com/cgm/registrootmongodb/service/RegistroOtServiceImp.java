@@ -29,6 +29,7 @@ public class RegistroOtServiceImp implements RegistroOtService{
     public ResgistroOt saveRegistroOt(ResgistroOt resgistroOt) {
         resgistroOt.setNumeroOt(PREFIX_OT + resgistroOt.getNumeroOt());
         resgistroOt.setFcCreacion(this.getFechaActualFormateada("dd/MM/YYYY HH:mm"));
+        resgistroOt.setFcActualizacion(this.getFechaActualFormateada("dd/MM/YYYY HH:mm"));
         return registroOtRepository.save(resgistroOt);
     }
 

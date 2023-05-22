@@ -60,8 +60,8 @@ public class RegistroOtControllerTest {
         mvc.perform(get(PREFIX_URL)
                 .contentType(MediaType.APPLICATION_JSON).header("token", TOKEN))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$",hasSize(1)))
-           .andExpect(jsonPath("$[0].nombreSistema",is(resgistroOt.getNombreSistema())));
+           .andExpect(jsonPath("$.result",hasSize(1)))
+           .andExpect(jsonPath("$.result[0].nombreSistema",is(resgistroOt.getNombreSistema())));
     }
 
     @Test
@@ -97,7 +97,7 @@ public class RegistroOtControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(JsonUtil.toJson(resgistroOt)))
            .andExpect(status().isCreated())
-           .andExpect(jsonPath("$.nombreSistema",is(resgistroOt.getNombreSistema())));
+           .andExpect(jsonPath("$.result.nombreSistema",is(resgistroOt.getNombreSistema())));
 
     }
 

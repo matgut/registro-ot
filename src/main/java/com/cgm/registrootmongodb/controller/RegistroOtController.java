@@ -7,6 +7,7 @@ import com.cgm.registrootmongodb.service.RegistroOtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/registro-ot")
+@Slf4j
 public class RegistroOtController {
 
     @Autowired
@@ -35,7 +37,8 @@ public class RegistroOtController {
             if(msgValidaToken(headers) != null) return msgValidaToken(headers);
             return CustomResponse.generateResponse("Registro guardado correctamente!",HttpStatus.CREATED,registroOtService.saveRegistroOt(resgistroOt));
         }catch(Exception e){
-            System.out.println(e.getMessage());
+            //System.out.println(e.getMessage());
+            log.error("error: en saveRegistro " + e.getMessage());
             return CustomResponse.generateResponse("Ha ocurrido una excepción, favor revisar!",HttpStatus.INTERNAL_SERVER_ERROR,null);
         }
     }
@@ -62,28 +65,30 @@ public class RegistroOtController {
             //return new ResponseEntity<>(HttpStatus.OK);
             return CustomResponse.generateResponse("Registro eliminado correctamente!",HttpStatus.OK,null);
         }catch(Exception e){
-            System.out.println(e.getMessage());
+            //System.out.println(e.getMessage());
+            log.error("error: en deleteRegistroOT " + e.getMessage());
             return CustomResponse.generateResponse("Ha ocurrido una excepción, favor revisar!",HttpStatus.INTERNAL_SERVER_ERROR,null);
         }
     }
 
     @GetMapping("byEstado/{estado}")
     @Operation(summary = "Obtiene registros OT por Estados")
-    public ResponseEntity<?> getRegistrosByEstado(@Parameter(in = ParameterIn.PATH) @PathVariable Estado estado,@RequestHeader Map<String, String> headers){
+    public ResponseEntity<?> getRegistrosByEstado(@Parameter(in = ParameterIn.PATH) @PathVariable String estado,@RequestHeader Map<String, String> headers){
         try{
 
             if(msgValidaToken(headers) != null) return msgValidaToken(headers);
 
-            List<ResgistroOt> list = registroOtService.getRegistroByEstado(Estado.valueOf(estado.toString().toUpperCase()));
+            List<ResgistroOt> list = registroOtService.getRegistroByEstado(estado);
 
             if(list == null || list.size() == 0){
-                //return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-                return CustomResponse.generateResponse("No se han encontrado registros para el estado "+estado,HttpStatus.OK,null);
+                return CustomResponse.generateResponse("No se han encontrado registros para el estado " + estado,HttpStatus.OK,null);
             }
+
             return CustomResponse.generateResponse("Registros obtenidos correctamente!",HttpStatus.OK,list);
             //return new ResponseEntity<>(list,HttpStatus.OK);
         }catch(Exception e){
-            System.out.println(e.getMessage());
+            //System.out.println(e.getMessage());
+            log.error("error: en getRegistrosByEstado " + e.getMessage());
             return CustomResponse.generateResponse("Ha ocurrido una excepción, favor revisar!",HttpStatus.INTERNAL_SERVER_ERROR,null);
         }
     }
@@ -93,6 +98,7 @@ public class RegistroOtController {
     public ResponseEntity<?> updRegistrosByIdEstado(@Parameter(in = ParameterIn.PATH) @PathVariable String id,@Parameter(in = ParameterIn.PATH) @PathVariable Estado estado,@RequestHeader Map<String, String> headers){
 
         try{
+
             if(msgValidaToken(headers) != null) return msgValidaToken(headers);
 
             ResgistroOt res = registroOtService.updateRegistroEstado(id, estado);
@@ -103,7 +109,8 @@ public class RegistroOtController {
             return CustomResponse.generateResponse("Registro actualizado correctamente!",HttpStatus.OK,res);
 
         }catch(Exception e){
-            System.out.println(e.getMessage());
+            //System.out.println(e.getMessage());
+            log.error("error: en updRegistrosByIdEstado " + e.getMessage());
             return CustomResponse.generateResponse("Ha ocurrido una excepción, favor revisar!",HttpStatus.INTERNAL_SERVER_ERROR,null);
         }
 
@@ -123,7 +130,8 @@ public class RegistroOtController {
             }
             return CustomResponse.generateResponse("Registros obtenidos correctamente!",HttpStatus.OK,listEstados);
         }catch(Exception e){
-            System.out.println(e.getMessage());
+            //System.out.println(e.getMessage());
+            log.error("error: en getEstadosOt " + e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

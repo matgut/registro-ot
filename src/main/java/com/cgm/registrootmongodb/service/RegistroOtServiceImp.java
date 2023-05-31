@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Stream;
 
 @Service
 public class RegistroOtServiceImp implements RegistroOtService{
@@ -40,12 +41,16 @@ public class RegistroOtServiceImp implements RegistroOtService{
     }
 
     @Override
-    public List<ResgistroOt> getRegistroByEstado(Estado estado) throws EstadoNotFoundException {
-        List<ResgistroOt> listByEstado = registroOtRepository.findByEstado(estado);
-        if(listByEstado.isEmpty()){
+    public List<ResgistroOt> getRegistroByEstado(String estado) throws EstadoNotFoundException {
+
+        String toUpperEstado = estado.toUpperCase();
+
+        if(!isvalidEstado(toUpperEstado)){
             return null;
         }
-        return listByEstado;
+
+        Estado estadoToEnum = Estado.valueOf(toUpperEstado);
+        return registroOtRepository.findByEstado(estadoToEnum);
     }
 
     @Override
@@ -65,6 +70,21 @@ public class RegistroOtServiceImp implements RegistroOtService{
         Date date = new Date();
         DateFormat dateFormat = new SimpleDateFormat(formatDate);
         return dateFormat.format(date);
+    }
+
+    private boolean isvalidEstado(String enumName){
+        try {
+            for (Estado estados : Estado.values()) {
+                if (estados.name().equals(enumName)) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+
     }
 
 

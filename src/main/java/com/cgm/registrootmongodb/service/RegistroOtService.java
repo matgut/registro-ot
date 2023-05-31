@@ -16,7 +16,7 @@ public interface RegistroOtService {
 
     void deleteRegistroOt(String id);
 
-    List<ResgistroOt> getRegistroByEstado(Estado estado);
+    List<ResgistroOt> getRegistroByEstado(String estado);
 
     ResgistroOt updateRegistroEstado(String id, Estado estado);
 

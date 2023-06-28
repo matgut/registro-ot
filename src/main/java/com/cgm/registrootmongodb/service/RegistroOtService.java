@@ -22,5 +22,7 @@ public interface RegistroOtService {
 
     List<Estado> getEstados();
 
+    List<ResgistroOt> getRegistroByEstadoFilterNot(String estado);
+
 
 }

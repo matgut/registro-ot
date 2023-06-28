@@ -53,6 +53,8 @@ public class RegistroOtServiceImp implements RegistroOtService{
         return registroOtRepository.findByEstado(estadoToEnum);
     }
 
+
+
     @Override
     public ResgistroOt updateRegistroEstado(String id,Estado estado) {
         ResgistroOt updRegistro = registroOtRepository.findById(id).orElseThrow(() -> new RegistroOtNotFoundException(id));
@@ -64,6 +66,19 @@ public class RegistroOtServiceImp implements RegistroOtService{
     @Override
     public List<Estado> getEstados() {
         return new ArrayList<Estado>(Arrays.asList(Estado.values()));
+    }
+
+    @Override
+    public List<ResgistroOt> getRegistroByEstadoFilterNot(String estado) {
+        String toUpperEstado = estado.toUpperCase();
+
+        if(!isvalidEstado(toUpperEstado)){
+            return null;
+        }
+
+        Estado estadoToEnum = Estado.valueOf(toUpperEstado);
+        return registroOtRepository.findNotEstado(estadoToEnum);
+
     }
 
     private String getFechaActualFormateada(String formatDate){

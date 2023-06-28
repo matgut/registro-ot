@@ -45,11 +45,23 @@ public class RegistroOtController {
 
     @GetMapping
     @Operation(summary = "Obtiene registros OT")
-    public ResponseEntity<?> getAllRegistros(@RequestHeader Map<String, String> headers){
+    public ResponseEntity<?> getAllRegistros(@RequestHeader Map<String, String> headers, @RequestParam(value = "in", required = false) String filterIn,
+                                             @RequestParam(value = "not", required = false) String filterNot){
+
         try{
             if(msgValidaToken(headers) != null) return msgValidaToken(headers);
-            //return ResponseEntity.ok(registroOtService.getAllRegistro());
-            return CustomResponse.generateResponse("Registros obtenidos correctamente!",HttpStatus.OK,registroOtService.getAllRegistro());
+
+            if(filterIn != null){
+                return CustomResponse.generateResponse("Registros obtenidos correctamente!", HttpStatus.OK, registroOtService.getRegistroByEstado(filterIn));
+            }
+
+            if(filterNot != null){
+                return CustomResponse.generateResponse("Registros obtenidos correctamente!", HttpStatus.OK, registroOtService.getRegistroByEstadoFilterNot(filterNot));
+            }
+
+            return CustomResponse.generateResponse("Registros obtenidos correctamente!", HttpStatus.OK, registroOtService.getAllRegistro());
+
+
         }catch(Exception e){
             System.out.println(e.getMessage());
             return CustomResponse.generateResponse("Ha ocurrido una excepción, favor revisar!",HttpStatus.INTERNAL_SERVER_ERROR,null);
